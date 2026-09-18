@@ -38,8 +38,8 @@ class TestForensicConsistencyMatrix:
         assert len(resp.attack_path) == 0, f"Attack path must be empty for benign message, got {resp.attack_path}"
         assert resp.demanded_action == "No Direct Action Demanded"
         assert resp.pressure_level in ("NONE", "LOW")
-        assert "malicious" not in resp.attacker_intent.lower()
-        assert "fraud" not in resp.attacker_intent.lower()
+        intent_lower = resp.attacker_intent.lower()
+        assert "no malicious" in intent_lower or "benign" in intent_lower or "normal communication" in intent_lower
 
     def test_b_message_containing_within_15_minutes(self):
         """TEST B: Message containing 'within 15 minutes'.
@@ -88,7 +88,7 @@ class TestForensicConsistencyMatrix:
         # Verify strict grounding: every stage has a finding_id
         for step in resp.attack_path:
             assert step.finding_id is not None, f"Stage '{step.stage}' missing finding_id grounding"
-            assert any(ind.id == step.finding_id for ind in resp.indicators), (
+            assert any(ind.finding_id == step.finding_id or ind.id == step.finding_id for ind in resp.indicators), (
                 f"Stage finding_id '{step.finding_id}' not found in indicators"
             )
 

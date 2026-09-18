@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: ScamShield AI - Serverless Backend Infrastructure
+Description: ScamShield AI - Serverless Backend Infrastructure (Free Tier Zero-Cost Architecture)
 
 Globals:
   Function:
@@ -15,10 +15,24 @@ Globals:
         ThrottlingRateLimit: 20
 
 Parameters:
-  BedrockModelId:
+  GeminiApiKey:
     Type: String
-    Default: anthropic.claude-3-5-sonnet-20241022-v2:0
-    Description: Amazon Bedrock Foundation Model ID
+    NoEcho: true
+    Default: ""
+    Description: Optional Google Gemini API Key for AI Intent Reasoning Layer
+  GeminiModelId:
+    Type: String
+    Default: gemini-2.5-flash
+    Description: Google Gemini Model ID
+  GoogleWebRiskApiKey:
+    Type: String
+    NoEcho: true
+    Default: ""
+    Description: Optional Google Web Risk API Key for Live Threat Intelligence
+  AllowedOrigin:
+    Type: String
+    Default: "*"
+    Description: Allowed CORS Origin (Amplify domain or *)
 
 Resources:
   ScamShieldApi:
@@ -28,7 +42,7 @@ Resources:
       Cors:
         AllowMethods: "'GET,POST,OPTIONS'"
         AllowHeaders: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
-        AllowOrigin: "'*'"
+        AllowOrigin: !Sub "'${AllowedOrigin}'"
 
   AnalyzeFunction:
     Type: AWS::Serverless::Function
@@ -37,17 +51,15 @@ Resources:
       Handler: src.handlers.analyze.handler
       Environment:
         Variables:
-          BEDROCK_MODEL_ID: !Ref BedrockModelId
+          GEMINI_API_KEY: !Ref GeminiApiKey
+          GEMINI_MODEL_ID: !Ref GeminiModelId
+          GOOGLE_WEB_RISK_API_KEY: !Ref GoogleWebRiskApiKey
+          ALLOWED_ORIGINS: !Ref AllowedOrigin
           DYNAMODB_TABLE_NAME: !Ref ReportsTable
           REPORTS_TABLE: !Ref ReportsTable
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref ReportsTable
-        - Statement:
-            - Effect: Allow
-              Action:
-                - bedrock:InvokeModel
-              Resource: !Sub "arn:aws:bedrock:*::foundation-model/${BedrockModelId}"
       Events:
         AnalyzeApi:
           Type: Api
