@@ -247,7 +247,19 @@ function translateIndicator(ind: Indicator): PlainLanguageSignal {
   };
 }
 
-function getRiskStyles(level: string) {
+function getRiskStyles(level: string, verdict?: string) {
+  if (verdict === "UNKNOWN_UNVERIFIED") {
+    return {
+      border: "border-amber-500/50",
+      bg: "bg-amber-950/20",
+      text: "text-amber-400",
+      badge: "bg-amber-500/15 text-amber-300 border-amber-500/40",
+      glow: "shadow-[0_0_30px_rgba(245,158,11,0.15)]",
+      bar: "from-amber-600 via-yellow-500 to-amber-400",
+      scanline: "rgba(245, 158, 11, 0.4)",
+    };
+  }
+
   switch (level) {
     case "CRITICAL":
       return {
@@ -303,9 +315,17 @@ function getHeadlineForVerdict(
     return "Verified Dangerous Link Detected";
   }
 
+  if (verdict === "UNKNOWN_UNVERIFIED") {
+    if (indicators?.some((i) => i.id === "IND_URL_SHORTENER")) {
+      return "Caution: Destination Unverified (Shortened Link)";
+    }
+    return "Caution: Destination Unverified";
+  }
+
   const isBenign =
+    verdict !== "UNKNOWN_UNVERIFIED" &&
     (riskLevel === "LOW" || riskLevel === "SAFE" || verdict === "BENIGN") &&
-    (!indicators || indicators.length === 0 || category === "BENIGN");
+    (!indicators || indicators.length === 0 || category === "BENIGN" || indicators.every((i) => i.severity === "LOW"));
 
   if (isBenign) {
     return "Message Appears Safe";
@@ -327,7 +347,7 @@ function getHeadlineForVerdict(
 
   if (riskLevel === "CRITICAL") return "Dangerous Phishing Lure Detected";
   if (riskLevel === "HIGH") return "High-Risk Fraud Communication";
-  if (riskLevel === "MEDIUM" || verdict === "UNKNOWN_UNVERIFIED") return "Caution: Suspicious Communication";
+  if (riskLevel === "MEDIUM" || verdict === "SUSPICIOUS") return "Caution: Suspicious Communication";
 
   return "Suspicious Communication Detected";
 }
@@ -379,11 +399,12 @@ function buildSimpleSummary(result: AnalysisResponse): string {
 export default function ResultPanel({ result, onReset }: ResultPanelProps) {
   const [copiedAction, setCopiedAction] = useState<string | null>(null);
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
-  const s = getRiskStyles(result.riskLevel);
+  const s = getRiskStyles(result.riskLevel, result.verdict);
 
   const isTrulyBenign =
+    result.verdict !== "UNKNOWN_UNVERIFIED" &&
     (result.riskLevel === "LOW" || result.riskLevel === "SAFE" || result.verdict === "BENIGN") &&
-    (result.category === "BENIGN" || !result.indicators || result.indicators.length === 0);
+    (result.category === "BENIGN" || !result.indicators || result.indicators.length === 0 || result.indicators.every((i) => i.severity === "LOW"));
 
   const headline = getHeadlineForVerdict(result.category, result.riskLevel, result.indicators, result.verdict);
   const simpleSummary = buildSimpleSummary(result);
@@ -491,7 +512,7 @@ export default function ResultPanel({ result, onReset }: ResultPanelProps) {
                   <span
                     className={`rounded-full border px-3 py-1 text-xs font-mono font-bold tracking-wider uppercase ${s.badge}`}
                   >
-                    {result.riskLevel} RISK
+                    {result.verdict === "UNKNOWN_UNVERIFIED" ? "UNVERIFIED" : `${result.riskLevel} RISK`}
                   </span>
                   <span className="rounded-full border border-white/[0.1] bg-zinc-900/90 px-3 py-1 text-xs font-mono font-semibold text-zinc-200">
                     {result.category?.replace(/_/g, " ") || "GENERAL"}

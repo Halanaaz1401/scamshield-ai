@@ -164,7 +164,11 @@ def reconcile_category(
 ) -> ScamCategory:
     """Reconcile category between deterministic rules, Bedrock, and AI Intent Reasoner."""
     # If final score is clearly benign, map to BENIGN
-    if final_score < 30.0 and deterministic.is_benign:
+    if final_score < 30.0 and (
+        deterministic.is_benign
+        or deterministic.primary_category == ScamCategory.BENIGN
+        or all(ind.severity == Severity.LOW for ind in deterministic.indicators)
+    ):
         return ScamCategory.BENIGN
 
     # If deterministic found strong category-specific indicators, prefer deterministic
@@ -431,6 +435,8 @@ def derive_canonical_forensic_fields(
         demanded_action = "Transfer Advance Fee or Payment"
     elif "IND_MALICIOUS_APK" in ind_ids:
         demanded_action = "Download & Install Untrusted App (.apk)"
+    elif "IND_KYC_SUSPENSION" in ind_ids:
+        demanded_action = "Submit Personal Identity / KYC Details"
     elif ai_intent and getattr(ai_intent, "requested_action", "") not in ("NO_ACTION", ""):
         req = getattr(ai_intent, "requested_action", "")
         action_map = {
@@ -625,7 +631,11 @@ def synthesize_attacker_intent(
         return "Lure victim seeking refund or service assistance to call a fraudulent mobile helpline, guiding them to enter UPI PIN or install screen-sharing software."
     elif category == ScamCategory.PAYMENT_SCAM:
         return "Trick recipient into approving reverse UPI collect requests or entering UPI PIN under the fraudulent impression of receiving incoming money."
-    elif category in (ScamCategory.BANKING_SCAM, ScamCategory.ACCOUNT_KYC_SCAM, ScamCategory.CREDENTIAL_THEFT):
+    elif category == ScamCategory.ACCOUNT_KYC_SCAM:
+        if any("lpg" in (ind.evidence or "").lower() or "subsidy" in (ind.evidence or "").lower() for ind in deterministic.indicators):
+            return "Trick victim into disclosing personal identity details or banking credentials under the false pretext of claiming a pending LPG gas subsidy."
+        return "Harvest personal identity documents (PAN, Aadhaar) or banking credentials through deceptive account or KYC verification forms."
+    elif category in (ScamCategory.BANKING_SCAM, ScamCategory.CREDENTIAL_THEFT):
         return "Harvest NetBanking usernames, passwords, card details, and 2FA OTPs through spoofed look-alike portals to conduct unauthorized electronic fund transfers."
     elif category == ScamCategory.JOB_SCAM:
         return "Entice victim with high-return simple tasks, establishing compliance with small payouts before extorting large 'VIP task' deposits."

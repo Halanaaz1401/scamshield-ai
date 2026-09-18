@@ -109,7 +109,7 @@ def detect_threat_signals(
         indicators=indicators,
         primary_category=primary_category,
         deterministic_score=det_score,
-        is_benign=len(indicators) == 0,
+        is_benign=len(indicators) == 0 or all(ind.id == "IND_URGENT_LANGUAGE" for ind in indicators),
         signal_count=len(indicators),
         matched_rule_ids=matched_rule_ids,
         explanation=explanation,

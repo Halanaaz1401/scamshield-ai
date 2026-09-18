@@ -9,7 +9,7 @@ def resolve_primary_category(signal_ids: Set[str], text_lower: str = "") -> Scam
 
     Rules evaluate in order of specificity and threat severity.
     """
-    if not signal_ids:
+    if not signal_ids or signal_ids == {"IND_URGENT_LANGUAGE"}:
         return ScamCategory.BENIGN
 
     # 1. Reverse UPI and payment trap signals

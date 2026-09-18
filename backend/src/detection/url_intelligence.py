@@ -105,7 +105,7 @@ LEGITIMATE_BRAND_DOMAINS = {
 AUTHORITATIVE_GLOBAL_DOMAINS = {
     "google.com", "microsoft.com", "apple.com", "amazon.in", "amazon.com",
     "wikipedia.org", "github.com", "cloudflare.com", "play.google.com",
-    "apps.apple.com", "youtube.com",
+    "apps.apple.com", "youtube.com", "example.com", "example.org", "example.net",
 }
 
 # Claimed context categories for Brand & Context Impersonation detection

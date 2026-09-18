@@ -94,9 +94,9 @@ RE_IMPERSONATION_GOVT = re.compile(
     flags=re.IGNORECASE,
 )
 
-# 10. KYC Expiration / PAN Verification Specific Lures
+# 10. KYC Expiration / PAN Verification / Subsidy Specific Lures
 RE_KYC_SPECIFIC = re.compile(
-    r"\b(?:pan[- ]?kyc|kyc\s+verification|update\s+kyc|kyc\s+suspended|kyc\s+expired|pan\s+card\s+link(?:ing)?|aadhaar\s+link(?:ing)?|link\s+pan\s+with\s+aadhaar)\b",
+    r"\b(?:pan[- ]?kyc|kyc\s+verification|update\s+(?:your\s+)?kyc|kyc\s+suspended|kyc\s+expired|kyc\s+pending|pending\s+kyc|lpg\s+subsidy|gas\s+subsidy|subsidy\s+is\s+pending|pan\s+card\s+link(?:ing)?|aadhaar\s+link(?:ing)?|link\s+pan\s+with\s+aadhaar)\b",
     flags=re.IGNORECASE,
 )
 
