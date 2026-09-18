@@ -1,0 +1,7 @@
+Create this folder beside the docs before using Antigravity:
+
+design-references/
+  codeant/
+  wireframe-template/
+
+Put the supplied screenshots/reference assets there. They are visual inspiration only. The authoritative UI/UX specification is docs/04-UI-UX-SPEC.md.

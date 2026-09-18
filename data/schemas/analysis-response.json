@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AnalysisResponse",
+  "type": "object",
+  "required": ["analysisId", "riskScore", "riskLevel", "indicators", "reasoning", "recommendedAction", "timestamp"],
+  "properties": {
+    "analysisId": {
+      "type": "string"
+    },
+    "riskScore": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "riskLevel": {
+      "type": "string",
+      "enum": ["SAFE", "SUSPICIOUS", "MALICIOUS"]
+    },
+    "indicators": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "severity"],
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "severity": {
+            "type": "string",
+            "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+          }
+        }
+      }
+    },
+    "reasoning": {
+      "type": "string"
+    },
+    "recommendedAction": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

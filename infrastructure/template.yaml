@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: ScamShield AI - Serverless Backend Infrastructure
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.12
+  Api:
+    MethodSettings:
+      - ResourcePath: "/*"
+        HttpMethod: "*"
+        ThrottlingBurstLimit: 50
+        ThrottlingRateLimit: 20
+
+Parameters:
+  BedrockModelId:
+    Type: String
+    Default: anthropic.claude-3-5-sonnet-20241022-v2:0
+    Description: Amazon Bedrock Foundation Model ID
+
+Resources:
+  ScamShieldApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+
+  AnalyzeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/
+      Handler: src.handlers.analyze.handler
+      Environment:
+        Variables:
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+          DYNAMODB_TABLE_NAME: !Ref ReportsTable
+          REPORTS_TABLE: !Ref ReportsTable
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref ReportsTable
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: !Sub "arn:aws:bedrock:*::foundation-model/${BedrockModelId}"
+      Events:
+        AnalyzeApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ScamShieldApi
+            Path: /analyze
+            Method: POST
+        HealthApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ScamShieldApi
+            Path: /health
+            Method: GET
+
+  ReportsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: analysis_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: analysis_id
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway Base URL
+    Value: !Sub "https://${ScamShieldApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
+  AnalyzeUrl:
+    Description: POST /analyze URL
+    Value: !Sub "https://${ScamShieldApi}.execute-api.${AWS::Region}.amazonaws.com/prod/analyze"
+  HealthUrl:
+    Description: GET /health URL
+    Value: !Sub "https://${ScamShieldApi}.execute-api.${AWS::Region}.amazonaws.com/prod/health"
+  ReportsTableName:
+    Description: DynamoDB Table Name
+    Value: !Ref ReportsTable
+  FunctionArn:
+    Description: Lambda Function ARN
+    Value: !GetAtt AnalyzeFunction.Arn
