@@ -26,3 +26,8 @@ def health_handler(
         },
         "body": json.dumps({"status": "ok"}),
     }
+
+
+# Standard Lambda handler alias
+handler = health_handler
+
