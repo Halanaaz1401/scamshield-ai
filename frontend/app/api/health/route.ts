@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 
-const BACKEND_API_URL = process.env.BACKEND_API_URL || "http://127.0.0.1:8000";
+/** Allow full 60-second budget for this route (used as keep-alive ping target). */
+export const maxDuration = 60;
+
+const BACKEND_API_URL = process.env.BACKEND_API_URL || "";
 
 export async function GET() {
+  if (!BACKEND_API_URL) {
+    return NextResponse.json({ status: "degraded", engine: "unconfigured" }, { status: 200 });
+  }
   try {
     const backendUrl = `${BACKEND_API_URL}/health`;
     const response = await fetch(backendUrl, {
