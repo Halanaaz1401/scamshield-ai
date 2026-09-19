@@ -381,7 +381,7 @@ def create_deterministic_intent_fallback(
             potential_consequence=consequence,
             recommended_action=rec_action,
             confidence=ConfidenceEnum.MEDIUM.value,
-            evidence_phrases=[input_url or "shortened link"],
+            evidence_phrases=[input_text or "shortened link"],
             ai_available=False,
             model_id=model_id,
             error_message=f"Operating on deterministic security rules ({error_reason})",

@@ -77,7 +77,7 @@ class LambdaProxyHandler(BaseHTTPRequestHandler):
                     "Content-Type": "application/json",
                     "Access-Control-Allow-Origin": "*",
                 },
-                "body": json.dumps({"error": {"code": "INTERNAL_ERROR", "message": str(exc)}}),
+                "body": json.dumps({"error": {"code": "INTERNAL_ERROR", "message": "An unexpected error occurred while processing the request"}}),
             }
 
         status_code = response.get("statusCode", 200)

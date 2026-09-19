@@ -125,7 +125,7 @@ A specialized zero-click destination inspector:
 ## 11. Technology Stack
 
 - **Frontend**: Next.js 15 (App Router, Server & Client Components), Tailwind CSS, Lucide Icons, Space Grotesk typography.
-- **Backend Compute**: Python 3.12, AWS Lambda, FastAPI / Serverless Proxy Handler.
+- **Backend Compute**: Python 3.12, AWS Lambda, Standard Library Serverless Proxy Handler.
 - **AI Engine**: Google Gemini 2.5 Flash via `google-genai` SDK with Pydantic structured output schemas.
 - **Infrastructure as Code**: AWS SAM (Serverless Application Model), CloudFormation.
 - **Testing**: Pytest, ESLint, Chrome Browser Subagent.
@@ -239,7 +239,6 @@ Amazon DynamoDB (PAY_PER_REQUEST, $0 when idle)
 
 - **AWS Deployment Status**: All deployment assets (`infrastructure/template.yaml`, `.aws-sam/build/AnalyzeFunction`, packaging scripts) have been compiled, linted with `sam validate --lint`, and validated offline. **Live deployment to AWS is pending user authentication of the local AWS CLI session (`aws configure`).**
 - **Threat Intelligence**: Without an active Google Web Risk key, live reputation checks gracefully fall back to deterministic domain heuristics.
-- **Experimental Android Prototype**: The initial Android notification prototype (`android/`) has been frozen in favor of the web/browser-first MVP.
 
 ---
 
