@@ -9,6 +9,8 @@ on:
 jobs:
   backend-lint-and-test:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: .
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -42,4 +44,5 @@ jobs:
       - name: Lint and build check
         run: |
           cd frontend
-          npm run lint || true
+          npm run lint
+          npm run build

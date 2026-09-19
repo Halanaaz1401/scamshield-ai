@@ -16,7 +16,7 @@ import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 
 from backend.src.detection.engine import DeterministicAnalysis
-from backend.src.models.response import AttackStep, Indicator, RiskLevel, ScamCategory
+from backend.src.models.response import AttackStep, RiskLevel, ScamCategory
 
 logger = logging.getLogger("scamshield.bedrock")
 

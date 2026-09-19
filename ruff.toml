@@ -1,0 +1,18 @@
+# ScamShield AI - Ruff Linter Configuration
+target-version = "py312"
+line-length = 120
+
+[lint]
+# Check standard Python syntax errors and Pyflakes violations
+select = ["E", "F"]
+ignore = [
+    "E501",  # line length handled flexibly
+    "E402",  # module level import not at top of file (required for server.py sys.path bootstrap)
+    "W291",  # trailing whitespace
+    "W292",  # no newline at end of file
+    "W293",  # blank line contains whitespace
+]
+
+[lint.per-file-ignores]
+# Test fixtures and tests can have unused imports and variables
+"backend/tests/*" = ["F401", "F841"]

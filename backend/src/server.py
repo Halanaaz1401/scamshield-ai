@@ -69,7 +69,7 @@ class LambdaProxyHandler(BaseHTTPRequestHandler):
 
         try:
             response = handler(event, context=None)
-        except Exception as exc:
+        except Exception:
             logger.exception("Unexpected exception in Lambda handler")
             response = {
                 "statusCode": 500,

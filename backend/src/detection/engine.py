@@ -1,6 +1,6 @@
 """Core deterministic threat detection engine for ScamShield AI."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List, Optional, Set
 
 from backend.src.detection.categories import resolve_primary_category

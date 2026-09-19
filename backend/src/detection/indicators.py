@@ -1,7 +1,7 @@
 """Deterministic cybersecurity threat indicator extractors and heuristic rules."""
 
 import re
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 from urllib.parse import urlparse
 
 from backend.src.detection.url_intelligence import (

@@ -5,7 +5,6 @@ network lookups or reputation queries.
 """
 
 import ipaddress
-import re
 import socket
 from typing import Optional, Tuple
 from urllib.parse import urlparse

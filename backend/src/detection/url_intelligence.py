@@ -16,8 +16,8 @@ Deterministic, safe, local-only URL analysis inspecting:
 
 import ipaddress
 import re
-from typing import Dict, List, Optional, Set, Tuple
-from urllib.parse import parse_qs, unquote, urlparse
+from typing import List, Optional, Tuple
+from urllib.parse import urlparse
 
 from backend.src.models.response import Indicator, Severity
 
@@ -610,7 +610,6 @@ def inspect_url_deep(raw_url: str, context_text: Optional[str] = None) -> List[I
             ))
 
     # 15. Brand Name in Domain (Counterfeit brand look-alike domain)
-    has_brand_in_domain = False
     if not is_authoritative:
         for kw in INDIAN_BRAND_KEYWORDS:
             brand_in_hostname = (
@@ -622,7 +621,6 @@ def inspect_url_deep(raw_url: str, context_text: Optional[str] = None) -> List[I
                 or (len(kw) >= 4 and kw in hostname)
             )
             if brand_in_hostname:
-                has_brand_in_domain = True
                 indicators.append(Indicator(
                     id="IND_URL_BRAND_IMPERSONATION",
                     name="Brand Impersonation in Domain Name",

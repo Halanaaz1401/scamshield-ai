@@ -7,7 +7,6 @@ from backend.src.detection import detect_threat_signals
 from backend.src.detection.url_intelligence import extract_urls
 from backend.src.detection.engine import DeterministicAnalysis
 from backend.src.handlers.health import health_handler
-from backend.src.models.request import AnalysisRequest
 from backend.src.models.response import AnalysisResponse
 from backend.src.services.bedrock_service import analyze_with_bedrock
 from backend.src.services.intent_reasoner import (

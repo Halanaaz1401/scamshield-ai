@@ -1,6 +1,6 @@
 """Scam taxonomy and category resolution rules for deterministic detection."""
 
-from typing import List, Set
+from typing import Set
 from backend.src.models.response import ScamCategory
 
 
