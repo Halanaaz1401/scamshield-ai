@@ -10,12 +10,20 @@ def health_handler(
 ) -> Dict[str, Any]:
     """Return a minimal, safe health status response.
 
-    Guarantees no internal environment variables, AWS account IDs,
-    filesystem paths, dependency versions, or credentials are leaked.
+    This endpoint is intended for:
+    - AWS API Gateway health checks
+    - Uptime monitoring
+    - Deployment verification
 
-    Returns:
-        Dict[str, Any]: Standard API Gateway proxy response with {"status": "ok"}.
+    It intentionally does NOT expose:
+    - Environment variables
+    - AWS account IDs
+    - Filesystem paths
+    - Dependency versions
+    - Credentials
+    - Internal infrastructure details
     """
+
     return {
         "statusCode": 200,
         "headers": {
@@ -23,11 +31,16 @@ def health_handler(
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Headers": "Content-Type,Authorization",
             "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+            "Cache-Control": "no-store",
         },
-        "body": json.dumps({"status": "ok"}),
+        "body": json.dumps(
+            {
+                "status": "ok",
+                "service": "ScamShield AI",
+            }
+        ),
     }
 
 
-# Standard Lambda handler alias
+# Standard AWS Lambda handler alias
 handler = health_handler
-
