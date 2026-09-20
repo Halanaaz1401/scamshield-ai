@@ -600,11 +600,8 @@ For the **Ship It** deployment, ScamShield is designed around a serverless AWS a
 
 ### Live Application
 
-> ADD LIVE URL HERE
+> https://scamshield-ai-six.vercel.app/
 
-### Demo Video
-
-> ADD YOUTUBE DEMO URL HERE
 
 ---
 
